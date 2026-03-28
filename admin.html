@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Caro Sweet Mua</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PANTALLA DE LOGIN                         -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <img src="img/Logo_1-removebg-preview.png" alt="Caro Sweet Mua" class="login-logo" />
+      <h2>Panel de Administración</h2>
+      <p>Ingresa tu contraseña para continuar</p>
+      <form id="loginForm">
+        <div class="login-input-wrap">
+          <input type="password" id="loginPwd" placeholder="Contraseña" autocomplete="off" />
+          <button type="button" class="login-eye" onclick="togglePwd()">👁</button>
+        </div>
+        <p class="login-error hidden" id="loginError">⚠️ Contraseña incorrecta</p>
+        <button type="submit" class="btn-primary">Entrar al panel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  APLICACIÓN PRINCIPAL                      -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="app hidden" id="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <img src="img/Logo_1-removebg-preview.png" alt="Logo" class="sidebar__logo" />
+        <span class="sidebar__title">Admin</span>
+      </div>
+      <nav class="sidebar__nav">
+        <button class="nav-btn active" data-view="hoy">
+          <span class="nav-btn__icon">📅</span><span>Hoy</span>
+        </button>
+        <button class="nav-btn" data-view="citas">
+          <span class="nav-btn__icon">📋</span><span>Todas las citas</span>
+        </button>
+        <button class="nav-btn" data-view="bloquear">
+          <span class="nav-btn__icon">🚫</span><span>Bloquear horario</span>
+        </button>
+        <button class="nav-btn" data-view="config">
+          <span class="nav-btn__icon">⚙️</span><span>Configuración</span>
+        </button>
+      </nav>
+      <div class="sidebar__bottom">
+        <a href="Index.html" class="sidebar-link">← Ir al sitio web</a>
+        <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+
+      <!-- Barra superior -->
+      <div class="topbar">
+        <button class="topbar__menu" onclick="toggleSidebar()" title="Menú">☰</button>
+        <span class="topbar__title" id="topbarTitle">Hoy</span>
+        <span class="topbar__date" id="topbarDate"></span>
+      </div>
+
+      <!-- ── VISTA: HOY ─────────────────────── -->
+      <section class="view active" id="view-hoy">
+        <div class="view-header">
+          <button class="day-nav" id="prevDay" title="Día anterior">‹</button>
+          <div class="day-info">
+            <h2 id="dayTitle">Cargando...</h2>
+            <input type="date" id="dayPicker" title="Selecciona fecha" />
+          </div>
+          <button class="day-nav" id="nextDay" title="Día siguiente">›</button>
+        </div>
+
+        <div class="day-summary" id="daySummary">
+          <div class="summary-chip"><strong>–</strong><span>Total citas</span></div>
+          <div class="summary-chip"><strong>–</strong><span>Confirmadas</span></div>
+          <div class="summary-chip"><strong>–</strong><span>Pendientes</span></div>
+        </div>
+
+        <div class="timeline" id="timeline">
+          <div class="loading-msg">Cargando itinerario...</div>
+        </div>
+      </section>
+
+      <!-- ── VISTA: CITAS ───────────────────── -->
+      <section class="view hidden" id="view-citas">
+        <div class="view-header flat">
+          <h2>Todas las citas</h2>
+          <input type="search" class="search-input" id="searchCitas" placeholder="🔍 Buscar por nombre o teléfono..." />
+        </div>
+        <div class="filter-tabs" id="citasFilter">
+          <button class="ftab active" data-status="todas">Todas</button>
+          <button class="ftab" data-status="pendiente">⏳ Pendientes</button>
+          <button class="ftab" data-status="confirmada">✅ Confirmadas</button>
+          <button class="ftab" data-status="cancelada">❌ Canceladas</button>
+        </div>
+        <div class="citas-list" id="citasList">
+          <div class="loading-msg">Cargando citas...</div>
+        </div>
+      </section>
+
+      <!-- ── VISTA: BLOQUEAR ────────────────── -->
+      <section class="view hidden" id="view-bloquear">
+        <div class="view-header flat">
+          <h2>Bloquear horarios</h2>
+        </div>
+        <div class="bloquear-grid">
+          <div class="panel-card">
+            <h3>➕ Agregar bloqueo</h3>
+            <p>Bloquea un horario para que tus clientes no puedan reservarlo</p>
+            <form id="bloquearForm">
+              <div class="form-group">
+                <label>Fecha *</label>
+                <input type="date" id="bloquearFecha" required />
+              </div>
+              <div class="form-group">
+                <label>Hora (vacío = todo el día)</label>
+                <select id="bloquearHora">
+                  <option value="">── Todo el día ──</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Motivo (opcional)</label>
+                <input type="text" id="bloquearMotivo" placeholder="Ej: Descanso, evento personal..." />
+              </div>
+              <button type="submit" class="btn-primary">🔒 Agregar bloqueo</button>
+            </form>
+          </div>
+          <div class="panel-card">
+            <h3>🔒 Bloqueos activos</h3>
+            <div id="bloqueosList"><p class="empty-txt">No hay bloqueos activos</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── VISTA: CONFIG ──────────────────── -->
+      <section class="view hidden" id="view-config">
+        <div class="view-header flat">
+          <h2>Configuración</h2>
+        </div>
+        <div class="config-grid">
+          <div class="panel-card">
+            <h3>📊 Estadísticas</h3>
+            <div id="statsGrid"><p class="empty-txt">Cargando...</p></div>
+          </div>
+          <div class="panel-card">
+            <h3>🔐 Contraseña admin</h3>
+            <p>Edita el archivo <code>firebase-config.js</code> y cambia la línea:</p>
+            <code class="code-block">const ADMIN_PASSWORD = "tu_contraseña";</code>
+          </div>
+          <div class="panel-card">
+            <h3>⏰ Horarios disponibles</h3>
+            <p>Edita el archivo <code>firebase-config.js</code> y modifica:</p>
+            <code class="code-block">const TIME_SLOTS = ["09:00","10:00",...];</code>
+            <p style="margin-top:10px">Horarios actuales:</p>
+            <div id="currentSlots" class="slots-preview"></div>
+          </div>
+          <div class="panel-card">
+            <h3>📱 Número de WhatsApp</h3>
+            <p>Este es el número donde recibirás las solicitudes de cita de tus clientes</p>
+            <form id="telefonoForm">
+              <div class="form-group">
+                <label>Número (con código de país, sin +)</label>
+                <input type="tel" id="telefonoInput"
+                  placeholder="528137459614"
+                  pattern="[0-9]{10,15}"
+                  title="Solo números, incluye código de país (52 para México)"
+                />
+                <small style="color:var(--muted);font-size:.75rem;margin-top:2px">
+                  Ejemplo México: 52 + 10 dígitos → <strong>528137459614</strong>
+                </small>
+              </div>
+              <button type="submit" class="btn-primary" style="width:100%">💾 Guardar número</button>
+            </form>
+            <p id="telefonoGuardado" style="font-size:.82rem;color:var(--success);margin-top:10px;display:none">✅ Número guardado correctamente</p>
+          </div>
+          <div class="panel-card">
+            <h3>🚀 Firebase</h3>
+            <div id="firebaseStatus"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  MODAL DETALLE DE CITA                     -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="modal-bg hidden" id="citaModalBg" onclick="closeCitaModal()"></div>
+  <div class="modal-cita hidden" id="citaModal">
+    <button class="modal-close" onclick="closeCitaModal()">✕</button>
+    <div id="citaModalContent"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="admin-toast" id="adminToast"></div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  SCRIPTS                                   -->
+  <!-- ══════════════════════════════════════════ -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
