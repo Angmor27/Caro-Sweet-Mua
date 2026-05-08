@@ -1,34 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-//  CARO SWEET MUA — Script principal
+//  CB MUA — Script principal
 // ═══════════════════════════════════════════════════════════
-
-// ── Firebase init (graceful: si no está configurado, funciona igual) ──
-let db = null;
-try {
-  const ok = typeof FIREBASE_CONFIG !== 'undefined' && FIREBASE_CONFIG.apiKey !== 'PEGA_AQUI';
-  if (ok) {
-    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.firestore();
-  }
-} catch (e) { console.warn('Firebase no disponible:', e); }
-
-// Número de WhatsApp (se actualiza desde Firebase al cargar)
-let WHATSAPP_PHONE = '528137459614';
-let phoneLoadPromise = null;  // guardamos la promesa para esperarla al enviar
-
-async function loadPhoneFromFirebase() {
-  if (!db) return;
-  try {
-    const doc = await db.collection('configuracion').doc('ajustes').get();
-    if (doc.exists && doc.data().telefono) {
-      let tel = doc.data().telefono.replace(/\D/g, '');
-      // Si solo son 10 dígitos (sin prefijo de México), agregarlo automáticamente
-      if (tel.length === 10) tel = '52' + tel;
-      WHATSAPP_PHONE = tel;
-    }
-  } catch (e) { console.warn('No se pudo cargar teléfono:', e); }
-}
-phoneLoadPromise = loadPhoneFromFirebase();
 
 // ── NAV scroll ─────────────────────────────────────────────
 const nav = document.getElementById('nav');
@@ -325,54 +297,52 @@ document.querySelectorAll('.service-card, .review-card').forEach(el => {
 // ═══════════════════════════════════════════════════════════
 const GALLERY = [
   // ── MAQUILLAJE SOCIAL ──────────────────────────────────
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_482147208_17938466078993815_7832259801652692973_n.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_482680344_17939105516993815_3442890068061636768_n.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_482981430_17939342714993815_1655182446372137913_n.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_485207701_674278921722499_558666821854801512_n.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_491456623_17944236191993815_2022741664039154392_n.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_495995498_1224852589199071_9207464624794294971_n.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_497190620_698786583096642_7297968881033514886_n.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_502953248_695282353106100_991346016717631972_n.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/Snapinta.App_503248581_1212350623896444_4520136992856863622_n.jpg' },
-  { cat:'social', type:'video', src:'img/Maquillaje social/Snapinta.App_AQMN3Oq38pQilUuACDCQ_FqWYo_Y5VPhHVyYMbyDSXutoYPH4Mp29MWkYcs1JY-aAQf_PHx0FQh7ef845KlewTj6mCgup6TiHtNmNjg.mp4' },
-  { cat:'social', type:'video', src:'img/Maquillaje social/Snapinta.App_AQMfCsLQuGMSXgaGbRhzE4ucKuz0SSAmkNGfNFluIbtGgbMZO3xjAdzuKe9AgyjxqRGJ_IxW-HePnoV_lHzd21eAHiL9XAtn6ZowYCQ.mp4' },
-  { cat:'social', type:'video', src:'img/Maquillaje social/Snapinta.App_AQNzQCI1KABl1W612gV1fc53B5NAajnBpv72jEiSCxDb-SlpsuIA_sMntWbrFRygGPZCEM42yqugxwEZNY6ywVMGcfXbzWwwbiPyFEI.mp4' },
-  { cat:'social', type:'video', src:'img/Maquillaje social/Snapinta.App_AQP4nigPPtVHBEXV_zBodok-IIcckomJ6W9f-VKT9OZQJKImMIiT2px2gfRynmKuNFF-KY6aneX7yAL7bCjIIvlhXgjETHf1ZyrI-IE.mp4' },
-  // ── MAQUILLAJE NATURAL ─────────────────────────────────
-  { cat:'natural', type:'img',   src:'img/Maquillaje Natural/Snapinta.App_487409222_17942014193993815_4349719202150650176_n.jpg' },
-  { cat:'natural', type:'img',   src:'img/Maquillaje Natural/Snapinta.App_503034552_718927433909493_3377671723436425109_n.jpg' },
-  { cat:'natural', type:'img',   src:'img/Maquillaje Natural/Snapinta.App_506012529_17951154836993815_6343832128159944056_n.jpg' },
-  { cat:'natural', type:'img',   src:'img/Maquillaje Natural/Snapinta.App_506031263_17951154884993815_8945817747937648959_n.jpg' },
-  { cat:'natural', type:'img',   src:'img/Maquillaje Natural/Snapinta.App_526346762_2249550048809228_8965796332766045396_n.jpg' },
-  { cat:'natural', type:'video', src:'img/Maquillaje Natural/Snapinta.App_AQMzXsQntOV-7ZxnrnmjA5jECX9B-Xnv7ZlO2bSC8rsVBqBgZ67_GseDzVRU79Kkgj5s2WtXEL9YOfEgQTdpLiPNUCGn3q6fhLQvVU0.mp4' },
-  { cat:'natural', type:'video', src:'img/Maquillaje Natural/Snapinta.App_AQNUfXEggqNX8BxN1baaJmJqdOd6vXsbvt85-y17xNIJR0nXcAW6Mfq8IlEP0K1gz-OHNzIhToB9JfTtw6mpfJFAi0jfU_87H1y_TEA.mp4' },
-  { cat:'natural', type:'video', src:'img/Maquillaje Natural/Snapinta.App_AQONNvuB3tiabusgJQphjyJX_TQ2BUP4xyLJZkh0u0Tg6w8PgJ7mMSixPL3cqbV_tFJAwCwU5z3Fnxrt5mc7M5DNdzhjgMHBZf14wGg.mp4' },
-  { cat:'natural', type:'video', src:'img/Maquillaje Natural/Snapinta.App_AQOi9sIF-REmrRBZrOCrwLe5OjedEmUecw3QEmIL0OI-owoSPjjCFtISDpkJdfxhFHuv5hRLXEKbOJ0j-t5BWVgkqcW4iFAB9ygwuH4.mp4' },
-  { cat:'natural', type:'video', src:'img/Maquillaje Natural/Snapinta.App_AQPrkwb4PMMg-zWNVR0xpZj9TRZZlZXW2dKXhhlGydqFmAWVOG84qFVG483Szn2hZzl9NyQJp8TqLLpSjLguzNX6b4veq647ELoYHuE.mp4' },
-  // ── ARTÍSTICO ──────────────────────────────────────────
-  { cat:'artistico', type:'img',   src:'img/Maquillaje Artistico/Snapinta.App_534930444_17958678221993815_7971669749227158391_n.jpg' },
-  { cat:'artistico', type:'img',   src:'img/Maquillaje Artistico/Snapinta.App_622694651_875559665391938_7662432781330966393_n.jpg' },
-  { cat:'artistico', type:'img',   src:'img/Maquillaje Artistico/Snapinta.App_656266515_18091094216156940_7168803048376053698_n.jpg' },
-  { cat:'artistico', type:'video', src:'img/Maquillaje Artistico/Snapinta.App_AQMT2045rwSYGFDKVE5GWqf2_G_EqyibRjuS_fqpRN0DawpF8RGUuvQ7kyu0gcg_prKZr6O1d21eRmFxKlOdkoBg.mp4' },
-  { cat:'artistico', type:'video', src:'img/Maquillaje Artistico/Snapinta.App_AQN45hH9gbhmu7OKL5SfO33y5k6MoUB3OYt8SIR7mPRLU1gcRZOqAYHZsjwO0qCgCzBIv_lohk9OKjfRAPT2FXUCb4fluallxrSlmaU.mp4' },
-  { cat:'artistico', type:'video', src:'img/Maquillaje Artistico/Snapinta.App_AQNHO8R4894aB4pu8C-5IUtkw6ZPp4x6RI-vwz_UAG3sm53-WSeGfJQCW0zIb2oduYKtoQ8ssE1IgRseqMHp5kgQ9q9OnYHJVyd-_ag.mp4' },
-  // ── QUINCEAÑERA ────────────────────────────────────────
-  { cat:'xv', type:'img', src:'img/Maquillaje XV/Snapinta.App_627049873_17978538911993815_7890760067813440844_n.jpg' },
-  { cat:'xv', type:'img', src:'img/Maquillaje XV/Snapinta.App_628727414_17978538899993815_6293730326751963083_n.jpg' },
-  { cat:'xv', type:'img', src:'img/Maquillaje XV/Snapinta.App_629471652_17978530481993815_6623644472806078447_n.jpg' },
-  { cat:'xv', type:'img', src:'img/Maquillaje XV/Snapinta.App_632966163_17978530490993815_1795760146738421151_n.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-1.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-2.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-3.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-4.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-5.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-6.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-7.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-8.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-9.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-10.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-11.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-12.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-13.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-14.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-15.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-16.jpg' },
+  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-17.jpg' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-1.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-2.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-3.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-4.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-18.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-19.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-20.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-21.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-22.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-23.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-24.mp4' },
+  { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-25.mp4' },
+  // ── NOVIA · QUINCEAÑERA ────────────────────────────────
+  { cat:'novia', type:'img', src:'img/Maquillaje XV-novia/maquillaje-xv-1.jpg' },
+  { cat:'novia', type:'img', src:'img/Maquillaje XV-novia/maquillaje-xv-3.jpg' },
+  { cat:'novia', type:'img', src:'img/Maquillaje XV-novia/maquillaje-xv-4.jpg' },
   // ── CABELLO ────────────────────────────────────────────
-  { cat:'cabello', type:'img',   src:'img/Cabello/Snapinta.App_498597256_17951685635993815_524382534185402109_n.jpg' },
-  { cat:'cabello', type:'img',   src:'img/Cabello/Snapinta.App_502352735_1298618308452777_1603491212947074472_n.jpg' },
-  { cat:'cabello', type:'img',   src:'img/Cabello/Snapinta.App_503543515_17951685608993815_3298461798371044922_n.jpg' },
-  { cat:'cabello', type:'img',   src:'img/Cabello/Snapinta.App_510434034_1250691500037833_8127969748621701726_n (1).jpg' },
-  { cat:'cabello', type:'img',   src:'img/Cabello/Snapinta.App_510434034_1250691500037833_8127969748621701726_n.jpg' },
-  { cat:'cabello', type:'img',   src:'img/Cabello/Snapinta.App_525895602_17956461317993815_5245731827519907487_n.jpg' },
-  { cat:'cabello', type:'video', src:'img/Cabello/Snapinta.App_AQN2djR1tYrdPT8JnWiigxwmaPUxppTYmrNV6OYKqaLylhCNmSJxIgr3Z6oLQEg2NLgdRG2bS_CCwSDxQSo2sThuPea4uGU1S3OA9tg.mp4' },
-  { cat:'cabello', type:'video', src:'img/Cabello/Snapinta.App_AQNPNL5NTqpwGziTHJzSODr31j-4LYO7LwdaRwwBpA19OPDMUWXaJSrx9346dwnKENuQq-ZRmuoxuDOKn3yxthwOfnIGnysIjj-mFNk.mp4' },
-  { cat:'cabello', type:'video', src:'img/Cabello/Snapinta.App_AQOabNf7ISL6APNeAtwu1tbMejP60jX28GNSClKkmppCOJKiCTY0dLq5bCOGgWklwoKWUguV0As48hsLkI6Q1AwBqBqglgrhlyzDp_w.mp4' },
-  { cat:'cabello', type:'video', src:'img/Cabello/Snapinta.App_AQPQWbyY043xdqGu6SSE8V3BD6hQ8bazmDuLLk29BEFQtKoMJCE37djP43fbUWqZa-Yk7Hw4XlAf3_BGA3dRHV8LCIMOYMtqyKYuvdc.mp4' },
-  { cat:'cabello', type:'video', src:'img/Cabello/Snapinta.App_AQPkhijdY2gDyQJ1BaO22TUnM1slZi7H9ooXlcej5zIvagQp0Kw87InWAGPSrJkff1fwHOdvmiVQVnV42gSGWVeflyspzQmTf9q2EFA.mp4' },
+  { cat:'cabello', type:'img',   src:'img/Cabello/cabello.jpg' },
+  { cat:'cabello', type:'img',   src:'img/Cabello/Cabello-1.jpg' },
+  { cat:'cabello', type:'img',   src:'img/Cabello/Cabello-2.jpg' },
+  { cat:'cabello', type:'img',   src:'img/Cabello/Cabello-3.jpg' },
+  { cat:'cabello', type:'video', src:'img/Cabello/Cabello-4.mp4' },
+  { cat:'cabello', type:'video', src:'img/Cabello/Cabello-5.mp4' },
+  { cat:'cabello', type:'video', src:'img/Cabello/Cabello-6.mp4' },
+  { cat:'cabello', type:'video', src:'img/Cabello/Cabello-7.mp4' },
+  // ── PEINADOS SUELTOS ───────────────────────────────────
+  { cat:'peinados', type:'img', src:'img/Peinado suelto/Cabello-3.jpg' },
+  // ── PAQUETE ────────────────────────────────────────────
+  { cat:'paquete', type:'img', src:'img/paquete/maquillaje-social-5.jpg' },
 ];
 
 // ── Render ─────────────────────────────────────────────────
@@ -481,4 +451,31 @@ document.addEventListener('keydown', e => {
   if (!lightbox.classList.contains('open')) return;
   if (e.key === 'ArrowRight') { currentIndex=(currentIndex+1)%currentItems.length; showLbItem(currentIndex); }
   if (e.key === 'ArrowLeft')  { currentIndex=(currentIndex-1+currentItems.length)%currentItems.length; showLbItem(currentIndex); }
+});
+
+// ─────────────────────────────────────────────────────────
+//  ANTES & DESPUÉS — Slider interactivo
+// ─────────────────────────────────────────────────────────
+document.querySelectorAll('.ba-container').forEach(container => {
+  const after  = container.querySelector('.ba-after');
+  const handle = container.querySelector('.ba-handle');
+  let dragging = false;
+
+  function setPos(x) {
+    const rect = container.getBoundingClientRect();
+    let pct = ((x - rect.left) / rect.width) * 100;
+    pct = Math.max(3, Math.min(97, pct));
+    after.style.clipPath  = `inset(0 0 0 ${pct}%)`;
+    handle.style.left     = `${pct}%`;
+  }
+
+  // Mouse
+  container.addEventListener('mousedown', e => { dragging = true; setPos(e.clientX); e.preventDefault(); });
+  document.addEventListener('mouseup',   () => { dragging = false; });
+  document.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX); });
+
+  // Touch
+  container.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX); }, { passive: true });
+  document.addEventListener('touchend',    () => { dragging = false; });
+  document.addEventListener('touchmove',   e => { if (dragging) setPos(e.touches[0].clientX); }, { passive: true });
 });
