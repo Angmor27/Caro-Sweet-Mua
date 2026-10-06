@@ -108,7 +108,7 @@ img { display: block; max-width: 100%; }
 
 /* ===== HERO ===== */
 .hero {
-  min-height: 100vh; position: relative;
+  min-height: 100vh; min-height: 100svh; position: relative;
   display: flex; align-items: center; justify-content: center;
   background: url('Fondo.jpg') center top / cover no-repeat;
   overflow: hidden;

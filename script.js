@@ -401,7 +401,6 @@ const GALLERY = [
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-1.jpg' },
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-2.jpg' },
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-3.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-4.jpg' },
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-5.jpg' },
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-6.jpg' },
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-7.jpg' },
@@ -413,8 +412,6 @@ const GALLERY = [
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-13.jpg' },
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-14.jpg' },
   { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-15.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-16.jpg' },
-  { cat:'social', type:'img',   src:'img/Maquillaje social/maquillaje-social-17.jpg' },
   { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-1.mp4' },
   { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-2.mp4' },
   { cat:'social', type:'video', src:'img/Maquillaje social/maquillaje-social-3.mp4' },
@@ -432,9 +429,8 @@ const GALLERY = [
   { cat:'novia', type:'img', src:'img/Maquillaje XV-novia/maquillaje-xv-3.jpg' },
   { cat:'novia', type:'img', src:'img/Maquillaje XV-novia/maquillaje-xv-4.jpg' },
   // ── CABELLO ────────────────────────────────────────────
-  { cat:'cabello', type:'img',   src:'img/Cabello/cabello.jpg' },
   { cat:'cabello', type:'img',   src:'img/Cabello/Cabello-1.jpg' },
-  { cat:'cabello', type:'img',   src:'img/Cabello/Cabello-2.jpg' },
+  { cat:'cabello', type:'img',   src:'img/Cabello/cabello-2.jpg' },
   { cat:'cabello', type:'img',   src:'img/Cabello/Cabello-3.jpg' },
   { cat:'cabello', type:'video', src:'img/Cabello/Cabello-4.mp4' },
   { cat:'cabello', type:'video', src:'img/Cabello/Cabello-5.mp4' },
@@ -465,8 +461,11 @@ function renderGallery(cat) {
       div.appendChild(img);
     } else {
       const vid = document.createElement('video');
-      vid.src = item.src; vid.muted = true; vid.loop = true;
-      vid.playsInline = true; vid.preload = 'metadata';
+      // iOS: atributos muted/playsinline para autoplay, y #t=0.1 para mostrar el primer cuadro
+      vid.muted = true; vid.loop = true; vid.playsInline = true;
+      vid.setAttribute('muted', ''); vid.setAttribute('playsinline', '');
+      vid.preload = 'metadata';
+      vid.src = item.src + '#t=0.1';
       vid.className = 'reel-vid';
       div.appendChild(vid);
 
@@ -539,7 +538,9 @@ function showLbItem(idx) {
     img.src = item.src; lbMedia.appendChild(img);
   } else {
     const vid = document.createElement('video');
-    vid.src = item.src; vid.controls = true; vid.autoplay = true;
+    vid.controls = true; vid.autoplay = true; vid.playsInline = true;
+    vid.setAttribute('playsinline', '');
+    vid.src = item.src;
     lbMedia.appendChild(vid);
   }
   lbCaption.textContent = `${idx + 1} / ${currentItems.length}`;
